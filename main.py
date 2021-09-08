@@ -152,14 +152,26 @@ def calculate_score(homeInitials, awayInitials, year=2021):
     hometotal = (0.4 * homeefgp) + (0.25 * hometov) + (0.2 * homerebound) + (0.15 * homefoul)
     awaytotal = (0.4 * awayefgp) + (0.25 * awaytov) + (0.2 * awayrebound) + (0.15 * awayfoul)
 
-    # print("awaytotal: " + str(awaytotal))
-
     total = (hometotal-awaytotal)*2
 
     return total
 
 def main():
-    print(calculate_score("PHI", "MIL"))
+    print("Welcome to my four factors NBA prediction model")
+    homeTeam = input("To start, who is the home team? (In initials): ")
+    awayTeam = input("And who is away? (Also in initials): ")
+    year = input("And did you want this match played in a historical specific year? (Input year, if not then just leave blank and press enter): ")
+    if(year==""):
+        score = calculate_score(homeTeam, awayTeam) 
+    else:
+        score = calculate_score(homeTeam, awayTeam, int(year)) 
+    score = round(score, 1)
+    if(score > 0):
+        print(f"I'm predicting that {homeTeam} wins by {score} points")
+    elif(score < 0):
+        print(f"I'm predicting that {awayTeam} wins by {abs(score)} points")
+    else:
+        print("The teams will be even! (Did you make sure you inputted different teams for away and home?)")
 
 if __name__ == "__main__":
     main()

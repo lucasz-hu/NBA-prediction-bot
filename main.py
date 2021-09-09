@@ -1,6 +1,11 @@
-from basketball_reference_scraper.teams import get_team_stats, get_opp_stats, get_whole_stats
+from basketball_reference_scraper.teams import get_team_stats, get_opp_stats
 from basketball_reference_scraper.seasons import get_schedule
 from basketball_reference_scraper.box_scores import get_box_scores
+from flask import Flask, request
+from flask_cors import CORS
+
+app = Flask(__name__)
+CORS(app)
 
 #https://docs.google.com/document/d/1mN4zhW5-i2GAzL56dSfrTR8bSRFEDIXfZZdyJpeQ0lc/edit
 #https://www.nbastuffer.com/analytics101/four-factors/
@@ -156,6 +161,19 @@ def calculate_score(homeInitials, awayInitials, year=2021):
 
     return total
 
+@app.route("/prediction/")
+def hello_world():
+    try:
+        homeTeam=request.args.get("homeTeam")
+        awayTeam=request.args.get("awayTeam")
+        score = calculate_score(homeTeam, awayTeam)
+        score = round(score, 1)
+        return {'score': score}
+    except:
+        return {}
+    
+    
+
 def main():
     print("Welcome to my four factors NBA prediction model")
     homeTeam = input("To start, who is the home team? (In initials): ")
@@ -166,12 +184,7 @@ def main():
     else:
         score = calculate_score(homeTeam, awayTeam, int(year)) 
     score = round(score, 1)
-    if(score > 0):
-        print(f"I'm predicting that {homeTeam} wins by {score} points")
-    elif(score < 0):
-        print(f"I'm predicting that {awayTeam} wins by {abs(score)} points")
-    else:
-        print("The teams will be even! (Did you make sure you inputted different teams for away and home?)")
+
 
 if __name__ == "__main__":
     main()

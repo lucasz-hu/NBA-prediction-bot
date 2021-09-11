@@ -3,6 +3,9 @@ from basketball_reference_scraper.seasons import get_schedule
 from basketball_reference_scraper.box_scores import get_box_scores
 from flask import Flask, request
 from flask_cors import CORS
+import json
+from datetime import datetime as dt
+import pandas as pd
 
 app = Flask(__name__)
 CORS(app)
@@ -161,29 +164,53 @@ def calculate_score(homeInitials, awayInitials, year=2021):
 
     return total
 
+def get_last(team, amountOfPreviousGames):
+    data = get_last_x_games(team, amountOfPreviousGames)
+    get_last_x_stats(data)
+
+def get_last_x_games(team, amountOfPreviousGames):
+    schedule = get_schedule(2021)
+    schedule["DATE"] = pd.to_datetime(schedule["DATE"])
+    today = dt.fromtimestamp(1620454400).isoformat() # dt.now()
+    schedule = schedule.loc[(schedule["DATE"] < today) & ((schedule["HOME"] == team) | (schedule["VISITOR"] == team))]
+    return schedule.tail(amountOfPreviousGames)
+
+def get_last_x_stats(previousGameData):
+    for index, row in previousGameData.iterrows():
+        print(row["DATE"], row["HOME"], row["VISITOR"])
+
 @app.route("/prediction/")
-def hello_world():
+def prediction():
     try:
         homeTeam=request.args.get("homeTeam")
         awayTeam=request.args.get("awayTeam")
         score = calculate_score(homeTeam, awayTeam)
         score = round(score, 1)
         return {'score': score}
-    except:
+    except Exception as e:
+        print(f"Error in prediction(): {e}")
         return {}
     
-    
+@app.route("/getDailyGames/")
+def getDailyGames():
+    try:
+        return json.dumps([{"homeTeam": "PHI", "awayTeam": "MIL", "score": -3.5, "id": 1}, {"homeTeam": "PHO", "awayTeam": "GSW", "score": 3.5, "id": 2}])
+    except Exception as e:
+        print(f"Error in getDailyGames(): {e}")
+        return {}
 
 def main():
-    print("Welcome to my four factors NBA prediction model")
-    homeTeam = input("To start, who is the home team? (In initials): ")
-    awayTeam = input("And who is away? (Also in initials): ")
-    year = input("And did you want this match played in a historical specific year? (Input year, if not then just leave blank and press enter): ")
-    if(year==""):
-        score = calculate_score(homeTeam, awayTeam) 
-    else:
-        score = calculate_score(homeTeam, awayTeam, int(year)) 
-    score = round(score, 1)
+    
+    print(get_last("Milwaukee Bucks", 5))
+    # print("Welcome to my four factors NBA prediction model")
+    # homeTeam = input("To start, who is the home team? (In initials): ")
+    # awayTeam = input("And who is away? (Also in initials): ")
+    # year = input("And did you want this match played in a historical specific year? (Input year, if not then just leave blank and press enter): ")
+    # if(year==""):
+    #     score = calculate_score(homeTeam, awayTeam) 
+    # else:
+    #     score = calculate_score(homeTeam, awayTeam, int(year)) 
+    # score = round(score, 1)
 
 
 if __name__ == "__main__":

@@ -1,19 +1,23 @@
 {
-  "name": "nba",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/lucasz-hu/NBA-prediction-bot.git"
-  },
-  "author": "",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/lucasz-hu/NBA-prediction-bot/issues"
-  },
-  "homepage": "https://github.com/lucasz-hu/NBA-prediction-bot#readme"
+    "name": "nba",
+    "version": "1.0.0",
+    "description": "",
+    "main": "index.js",
+    "scripts": {
+        "start": "npm run watch:css && react-scripts start",
+        "build": "npm run watch:css && react-scripts build",
+        "test": "react-scripts test",
+        "eject": "react-scripts eject",
+        "watch:css": "postcss src/assets/tailwind.css -o src/assets/main.css"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/lucasz-hu/NBA-prediction-bot.git"
+    },
+    "author": "",
+    "license": "ISC",
+    "bugs": {
+        "url": "https://github.com/lucasz-hu/NBA-prediction-bot/issues"
+    },
+    "homepage": "https://github.com/lucasz-hu/NBA-prediction-bot#readme"
 }

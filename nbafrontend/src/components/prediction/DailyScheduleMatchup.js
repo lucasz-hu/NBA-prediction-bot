@@ -4,7 +4,7 @@ import DailyScheduleMatchupTeam from "./DailyScheduleMatchupTeam.js";
 
 const DailyScheduleMatchup = ({ homeTeam, awayTeam, score }) => {
     return (
-        <div className="box-border border-4 m-4 p-2 rounded-md bg-purple-100 border-gray-700 shadow-xl">
+        <div className="box-border border-4 m-4 p-2 rounded-md bg-white border-gray-700 shadow-xl">
             <div className="place-items-center m-auto flex justify-center ">
                 <DailyScheduleMatchupTeam teamName={homeTeam} />
                 <h1 className="md:mx-48 mx-10 text-2xl">vs</h1>

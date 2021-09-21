@@ -34,7 +34,7 @@ const DailySchedule = () => {
     }, []);
 
     return (
-        <div className="font-sans">
+        <div className="font-sans ">
             <h1 className="text-4xl font-bold text-center">
                 Daily Predictions:
                 {" " +

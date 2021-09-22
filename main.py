@@ -6,6 +6,7 @@ from flask_cors import CORS
 import json
 from datetime import datetime as dt
 import pandas as pd
+import teamAbbreviations
 
 app = Flask(__name__)
 CORS(app)
@@ -18,41 +19,8 @@ CORS(app)
 #also, change homeOffenses.py get_homeOffense_stats and get_opp_stats to not have to fetch data every time. Currently, it fetches data, then filters out to approriate homeOffense.
 #rather, have it fetch data and return raw data.
 
-teamAbbreviations = {
-"ATLANTA HAWKS" : "ATL",
-"BOSTON CELTICS": "BOS",
-"BROOKLYN NETS": "BRK",
-"CHICAGO BULLS" : "CHI",
-"CHARLOTTE HORNETS": "CHO",
-"CLEVELAND CAVALIERS ": "CLE",
-"DALLAS MAVERICKS" : "DAL",
-"DENVER NUGGETS" : "DEN",
-"DETROIT PISTONS" : "DET",
-"GOLDEN STATE WARRIORS ": "GSW",
-"HOUSTON ROCKETS" : "HOU",
-"INDIANA PACERS" : "IND",
-"LOS ANGELES CLIPPERS" : "LAC",
-"LOS ANGELES LAKERS" : "LAL",
-"MEMPHIS GRIZZLIES": "MEM",
-"MIAMI HEAT" : "MIA",
-"MILWAUKEE BUCKS": "MIL",
-"MINNESOTA TIMBERWOLVES" : "MIN",
-"NEW ORLEANS PELICANS": "NOP",
-"NEW YORK KNICKS" : "NYK",
-"OKLAHOMA CITY THUNDER" : "OKC",
-"ORLANDO MAGIC": "ORL",
-"PHILADELPHIA 76ERS" : "PHI",
-"PHOENIX SUNS": "PHO",
-"PORTLAND TRAIL BLAZERS" : "POR",
-"SACRAMENTO KINGS" : "SAC",
-"SAN ANTONIO SPURS" : "SAS",
-"TORONTO RAPTORS" : "TOR",
-"UTAH JAZZ" : "UTA",
-"WASHINGTON WIZARDS" : "WAS"
-}
-
-def calculate_efgp_helper(fieldGoal, threePoint, fieldGoalAverage):
-    return (fieldGoal + (0.5)*threePoint)/fieldGoalAverage;
+def calculate_efgp_helper(fieldGoal, threePoint, fieldGoalAttempts):
+    return (fieldGoal + (0.5)*threePoint)/fieldGoalAttempts;
 
 def calculate_efgp(offensiveFieldGoal, offensiveThreePoint, offensiveFieldGoalAverage, defensiveFieldGoal, defensiveThreePoint, defensiveFieldGoalAverage):
     return (calculate_efgp_helper(offensiveFieldGoal, offensiveThreePoint, offensiveFieldGoalAverage)-calculate_efgp_helper(defensiveFieldGoal, defensiveThreePoint, defensiveFieldGoalAverage))
@@ -75,9 +43,9 @@ def calculate_foul_helper(freeThrowsMade, fieldGoalAttempts):
 def calculate_foul(homeFreeThrowsMade, homeFieldGoalAttempts, awayFreeThrowsmade, awayFieldGoalAttempts):
     return calculate_foul_helper(homeFreeThrowsMade, homeFieldGoalAttempts)-calculate_foul_helper(awayFreeThrowsmade, awayFieldGoalAttempts)
 
-def calculate_score(homeInitials, awayInitials, year=2021):
-    homeFullName = (list(teamAbbreviations.keys())[list(teamAbbreviations.values()).index(homeInitials)])
-    awayFullName = (list(teamAbbreviations.keys())[list(teamAbbreviations.values()).index(awayInitials)])
+def calculate_score(homeInitials, awayInitials, time=dt.now() ,year=2021):
+    homeFullName = (list(teamAbbreviations.teamAbbreviations.keys())[list(teamAbbreviations.teamAbbreviations.values()).index(homeInitials)])
+    awayFullName = (list(teamAbbreviations.teamAbbreviations.keys())[list(teamAbbreviations.teamAbbreviations.values()).index(awayInitials)])
     
     homeOffenseStats = get_team_stats(
         homeInitials,
@@ -260,23 +228,24 @@ def calculate_score(homeInitials, awayInitials, year=2021):
     homeMomentumTotal = (0.4*homeMomentumEfgp) + (0.25 * homeMomentumTov) + (0.2 * homeMomentumRebound) + (0.15 * homeMomentumFoul)
     awayMomentumTotal = (0.4*awayMomentumEfgp) + (0.25 * awayMomentumTov) + (0.2 * awayMomentumRebound) + (0.15 * awayMomentumFoul)
 
-    total = ((hometotal+homeMomentumTotal)-(awaytotal+awayMomentumTotal))*2
-    #total = (hometotal-awaytotal)*2
+    total = (((hometotal+homeMomentumTotal)/2)-((awaytotal+awayMomentumTotal)/2))*2
 
     return total
 
-def team_momentum_stats(team, amountOfPreviousGames=5):
+def team_momentum_stats(team, amountOfPreviousGames=5, time=dt.now()):
     #team in full name
-    stats = get_last(team, amountOfPreviousGames)
+    stats = get_last(team, amountOfPreviousGames, time)
     return stats
 
-def get_last(team, amountOfPreviousGames):
-    data = get_last_x_games(team, amountOfPreviousGames)
+def get_last(team, amountOfPreviousGames, time=dt.now()):
+    data = get_last_x_games(team, amountOfPreviousGames, time)
     return get_last_x_stats(data, team)
 
-def get_last_x_games(team, amountOfPreviousGames):
+def get_last_x_games(team, amountOfPreviousGames, time=dt.now()):
     #Gets schedule for team with amountOfGames
-    teamFullName = (list(teamAbbreviations.keys())[list(teamAbbreviations.values()).index(team)]).title()
+    teamFullName = (list(teamAbbreviations.teamAbbreviations.keys())[list(teamAbbreviations.teamAbbreviations.values()).index(team)]).title()
+    if teamFullName == "Philadelphia 76Ers":
+        teamFullName = "Philadelphia 76ers"
     schedule = get_schedule(2021)
     schedule["DATE"] = pd.to_datetime(schedule["DATE"])
     today = dt.fromtimestamp(1620454400).isoformat() # dt.now()
@@ -304,9 +273,9 @@ def get_last_x_stats(previousGameData, team):
         "teamDefenseFreeThrowsMade" : 0
     }
     for index, row in previousGameData.iterrows():
-        homeAbbreviation = teamAbbreviations[row["HOME"].upper()]
-        awayAbbreviation = teamAbbreviations[row["VISITOR"].upper()]
-        homeFullName = (list(teamAbbreviations.keys())[list(teamAbbreviations.values()).index(homeAbbreviation)]).title()
+        homeAbbreviation = teamAbbreviations.teamAbbreviations[row["HOME"].upper()]
+        awayAbbreviation = teamAbbreviations.teamAbbreviations[row["VISITOR"].upper()]
+        homeFullName = (list(teamAbbreviations.teamAbbreviations.keys())[list(teamAbbreviations.teamAbbreviations.values()).index(homeAbbreviation)]).title()
         game = get_box_scores(row["DATE"], homeAbbreviation, awayAbbreviation)
         if row["HOME"] == homeFullName:
             teamStats["teamOffenseFieldGoal"] += int(game[homeAbbreviation].loc[game[homeAbbreviation]["PLAYER"] == "Team Totals"]["FG"])

@@ -5,12 +5,18 @@ import DailyScheduleMatchupTeam from "./DailyScheduleMatchupTeam.js";
 const DailyScheduleMatchup = ({ homeTeam, awayTeam, score }) => {
     return (
         <div className="box-border border-4 m-4 p-2 rounded-md bg-white border-gray-700 shadow-xl">
-            <div className="place-items-center m-auto flex justify-center ">
-                <DailyScheduleMatchupTeam teamName={homeTeam} />
-                <h1 className="md:mx-48 mx-10 text-2xl">vs</h1>
-                <DailyScheduleMatchupTeam teamName={awayTeam} />
+            <div className="flex justify-center space-x-5 md:space-x-30 lg:space-x-52">
+                <div className="font-semibold grid place-items-center">
+                    Home: <DailyScheduleMatchupTeam teamName={homeTeam} />
+                </div>
+                <div className="flex flex-col justify-around text-center">
+                    <h1 className="text-2xl">vs</h1>
+                    <h2 className="text-4xl font-bold">{score}</h2>
+                </div>
+                <div className="font-semibold grid place-items-center">
+                    Away: <DailyScheduleMatchupTeam teamName={awayTeam} />
+                </div>
             </div>
-            <h2 className="flex justify-center text-4xl font-bold">{score}</h2>
         </div>
     );
 };

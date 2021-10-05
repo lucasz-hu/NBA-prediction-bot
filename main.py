@@ -7,9 +7,12 @@ import json
 from datetime import datetime as dt
 import pandas as pd
 import teamAbbreviations
+import config
 
 app = Flask(__name__)
 CORS(app)
+
+test_time = config.test_time
 
 #https://docs.google.com/document/d/1mN4zhW5-i2GAzL56dSfrTR8bSRFEDIXfZZdyJpeQ0lc/edit
 #https://www.nbastuffer.com/analytics101/four-factors/
@@ -43,7 +46,7 @@ def calculate_foul_helper(freeThrowsMade, fieldGoalAttempts):
 def calculate_foul(homeFreeThrowsMade, homeFieldGoalAttempts, awayFreeThrowsmade, awayFieldGoalAttempts):
     return calculate_foul_helper(homeFreeThrowsMade, homeFieldGoalAttempts)-calculate_foul_helper(awayFreeThrowsmade, awayFieldGoalAttempts)
 
-def calculate_score(homeInitials, awayInitials, time=dt.now() ,year=2021):
+def calculate_score(homeInitials, awayInitials, time=dt.now() ,year=config.season):
     homeFullName = (list(teamAbbreviations.teamAbbreviations.keys())[list(teamAbbreviations.teamAbbreviations.values()).index(homeInitials)])
     awayFullName = (list(teamAbbreviations.teamAbbreviations.keys())[list(teamAbbreviations.teamAbbreviations.values()).index(awayInitials)])
     
@@ -161,8 +164,8 @@ def calculate_score(homeInitials, awayInitials, time=dt.now() ,year=2021):
 
     awayfoul = calculate_foul(awayOffenseFreeThrowsMade, awayOffenseFieldGoalAttempts, awayDefenseFreeThrowsMade, awayDefenseFieldGoalAttempts) * 100
 
-    homeMomentumStats = team_momentum_stats(homeInitials)
-    awayMomentumStats = team_momentum_stats(awayInitials)
+    homeMomentumStats = team_momentum_stats(homeInitials, time=test_time)
+    awayMomentumStats = team_momentum_stats(awayInitials, time=test_time)
 
     homeMomentumEfgp = calculate_efgp(
         homeMomentumStats["teamOffenseFieldGoal"], 
@@ -228,8 +231,7 @@ def calculate_score(homeInitials, awayInitials, time=dt.now() ,year=2021):
     homeMomentumTotal = (0.4*homeMomentumEfgp) + (0.25 * homeMomentumTov) + (0.2 * homeMomentumRebound) + (0.15 * homeMomentumFoul)
     awayMomentumTotal = (0.4*awayMomentumEfgp) + (0.25 * awayMomentumTov) + (0.2 * awayMomentumRebound) + (0.15 * awayMomentumFoul)
 
-    total = (((hometotal+homeMomentumTotal)/2)-((awaytotal+awayMomentumTotal)/2))*2
-
+    total = (((hometotal+homeMomentumTotal))-((awaytotal+awayMomentumTotal)))*2
     return total
 
 def team_momentum_stats(team, amountOfPreviousGames=5, time=dt.now()):
@@ -246,9 +248,9 @@ def get_last_x_games(team, amountOfPreviousGames, time=dt.now()):
     teamFullName = (list(teamAbbreviations.teamAbbreviations.keys())[list(teamAbbreviations.teamAbbreviations.values()).index(team)]).title()
     if teamFullName == "Philadelphia 76Ers":
         teamFullName = "Philadelphia 76ers"
-    schedule = get_schedule(2021)
+    schedule = get_schedule(config.season)
     schedule["DATE"] = pd.to_datetime(schedule["DATE"])
-    today = dt.fromtimestamp(1620454400).isoformat() # dt.now()
+    today = time # dt.now()
     schedule = schedule.loc[(schedule["DATE"] < today) & ((schedule["HOME"] == teamFullName) | (schedule["VISITOR"] == teamFullName))]
     return schedule.tail(amountOfPreviousGames)
 
@@ -275,8 +277,11 @@ def get_last_x_stats(previousGameData, team):
     for index, row in previousGameData.iterrows():
         homeAbbreviation = teamAbbreviations.teamAbbreviations[row["HOME"].upper()]
         awayAbbreviation = teamAbbreviations.teamAbbreviations[row["VISITOR"].upper()]
-        homeFullName = (list(teamAbbreviations.teamAbbreviations.keys())[list(teamAbbreviations.teamAbbreviations.values()).index(homeAbbreviation)]).title()
+        homeFullName = (list(teamAbbreviations.teamAbbreviations.keys())[list(teamAbbreviations.teamAbbreviations.values()).index(team)]).title()
+        if homeFullName == "Philadelphia 76Ers":
+            homeFullName = "Philadelphia 76ers"
         game = get_box_scores(row["DATE"], homeAbbreviation, awayAbbreviation)
+        print(row["DATE"])
         if row["HOME"] == homeFullName:
             teamStats["teamOffenseFieldGoal"] += int(game[homeAbbreviation].loc[game[homeAbbreviation]["PLAYER"] == "Team Totals"]["FG"])
             teamStats["teamOffenseThreePoint"] += int(game[homeAbbreviation].loc[game[homeAbbreviation]["PLAYER"] == "Team Totals"]["3P"])
@@ -330,18 +335,15 @@ def prediction():
 @app.route("/getDailyGames/")
 def getDailyGames():
     try:
-        return json.dumps([{"homeTeam": "ATL", "awayTeam": "BOS", "score": -3.5, "id": 1},{"homeTeam": "BRK", "awayTeam": "CHI", "score": -13.5, "id": 1},
-        {"homeTeam": "CHO", "awayTeam": "CLE", "score": 0.0, "id": 1},{"homeTeam": "DAL", "awayTeam": "DEN", "score": 16.9, "id": 1},{"homeTeam": "DET", "awayTeam": "GSW", "score": -3.5, "id": 1},
-        {"homeTeam": "HOU", "awayTeam": "IND", "score": -3.5, "id": 1},{"homeTeam": "LAC", "awayTeam": "LAL", "score": -3.5, "id": 1},{"homeTeam": "MEM", "awayTeam": "MIA", "score": -3.5, "id": 1},
-        {"homeTeam": "MIL", "awayTeam": "MIN", "score": -3.5, "id": 1},{"homeTeam": "NOP", "awayTeam": "NYK", "score": -3.5, "id": 1},{"homeTeam": "OKC", "awayTeam": "ORL", "score": -3.5, "id": 1},
-        {"homeTeam": "PHI", "awayTeam": "PHO", "score": -3.5, "id": 1},{"homeTeam": "POR", "awayTeam": "SAC", "score": -3.5, "id": 1},{"homeTeam": "SAS", "awayTeam": "TOR", "score": -3.5, "id": 1},
-        {"homeTeam": "UTA", "awayTeam": "WAS", "score": -3.5, "id": 1}])
+        with open("scores/cacheGames.json", "r") as scoreJson:
+            scores = json.load(scoreJson)
+            return scores
     except Exception as e:
         print(f"Error in getDailyGames(): {e}")
         return {}
 
 def main():
-    print(calculate_score("CHI", "MIL"))
+    calculate_score("PHO", "MIL")
     #get_last("Milwaukee Bucks", 5)
     # print("Welcome to my four factors NBA prediction model")
     # homeTeam = input("To start, who is the home team? (In initials): ")

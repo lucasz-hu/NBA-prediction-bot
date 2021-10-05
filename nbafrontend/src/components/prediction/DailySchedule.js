@@ -3,8 +3,8 @@ import DailyScheduleMatchup from "./DailyScheduleMatchup";
 
 const DailySchedule = () => {
     const [dailyGames, setDailyGames] = useState([]);
+    const [dailyTime, setDailyTime] = useState([]);
 
-    const currentDate = new Date();
     const monthNames = [
         "January",
         "February",
@@ -29,7 +29,8 @@ const DailySchedule = () => {
                 throw response;
             })
             .then((data) => {
-                setDailyGames(data);
+                setDailyGames(data["games"]);
+                setDailyTime(new Date(data["meta"].time * 1000));
             });
     }, []);
 
@@ -37,12 +38,14 @@ const DailySchedule = () => {
         <div className="font-sans ">
             <h1 className="text-4xl font-bold text-center">
                 Daily Predictions:
-                {" " +
-                    monthNames[currentDate.getMonth()] +
-                    " " +
-                    currentDate.getDate() +
-                    ", " +
-                    currentDate.getFullYear()}
+                {dailyTime.length !== 0
+                    ? " " +
+                      monthNames[dailyTime.getMonth()] +
+                      " " +
+                      dailyTime.getDate() +
+                      ", " +
+                      dailyTime.getFullYear()
+                    : void 0}
             </h1>
             <div>
                 {dailyGames.map((game) => {
@@ -51,7 +54,7 @@ const DailySchedule = () => {
                             <DailyScheduleMatchup
                                 homeTeam={game["homeTeam"]}
                                 awayTeam={game["awayTeam"]}
-                                score={game["score"]}
+                                score={Math.round(game["score"] * 10) / 10}
                                 key={game["id"]}
                             />
                         </div>

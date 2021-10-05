@@ -7,10 +7,13 @@ import config
 import teamAbbreviations
 from main import calculate_score
 
+test_time = config.test_time
+
+
 def getDailyGameSchedule(time):
     #print(get_schedule(2021))
     schedule = get_schedule(2021)
-    dailyGames = schedule.loc[schedule['DATE'] == datetime.fromtimestamp(1620454400).strftime("%Y-%m-%d")]
+    dailyGames = schedule.loc[schedule['DATE'] == test_time.strftime("%Y-%m-%d")]
     gamesToReturn = [] 
     for index,row in dailyGames.iterrows():
         game = {}
@@ -20,34 +23,40 @@ def getDailyGameSchedule(time):
     return gamesToReturn
 
 def writeToCache():
-    jsonData = {}
-    jsonData["games"] = {}
-    jsonData["meta"] = {}
+    print("Starting writeToCache() at ", datetime.now().strftime('%H:%M:%S %Y-%m-%d'))
+    scoredSchedule = {}
+    scoredSchedule["games"] = []
+    scoredSchedule["meta"] = {}
     jsonDataId = 0
 
     dailyGameSchedule = getDailyGameSchedule("now")
-    scoredSchedule = []
     for game in dailyGameSchedule:
+        tempJsonObj = {}
         jsonDataId = jsonDataId + 1
-        jsonData["games"][jsonDataId] = game
-        result = calculate_score(game["homeTeam"], game["awayTeam"], datetime.fromtimestamp(1620454400))
-        jsonData["games"][jsonDataId]["score"] = result
-        print(result)
+        tempJsonObj["homeTeam"] = game["homeTeam"]
+        tempJsonObj["awayTeam"] = game["awayTeam"]
+        result = calculate_score(game["homeTeam"], game["awayTeam"], test_time, 2021)
+        tempJsonObj["score"] = result
+        tempJsonObj["id"] = jsonDataId
+        scoredSchedule["games"].append(tempJsonObj)
+        print(tempJsonObj)
+    print("2", scoredSchedule)
 
         
-    jsonData["meta"]["time"] = time.time()
+    scoredSchedule["meta"]["time"] = time.time()
 
-    with open("cacheGames.json", "w") as outfile:
-        json.dump(jsonData, outfile)
+    with open("scores/cacheGames.json", "w") as outfile:
+        json.dump(scoredSchedule, outfile)
+    print("Finished at ", datetime.now().strftime('%H:%M:%S %Y-%m-%d'))
 
 
 def main():
-    writeToCache()
-    #print(get_schedule(2021).to_string())
-    # schedule.every().day.at("20:54").do(printHere)
+    # schedule.every().day.at("01:26").do(writeToCache)
     # while True:
     #     schedule.run_pending()
     #     time.sleep(1)
+    print(test_time)
+    writeToCache()
 
 
 if __name__ == "__main__":

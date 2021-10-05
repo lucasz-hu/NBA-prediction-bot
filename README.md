@@ -1,7 +1,3 @@
-# NBA Prediction Bot (Still a WIP)
+#NBA Prediction website
 
-## This is my NBA prediction bot that utilizes the four factors of basketball
-
-### To start, download this project. Then run `calculate_score()` inside of `new.py` (bestnbabot.py is old project). First parameter is home team, second parameter is away team, third parameter is year (optional, default value 2021)
-
-### Program will then output either a position or negative number. Positive means home team favored, negative number means away team favored. Note: There is no home-field advantage. Apply it how you want.
+This is my NBA prediction website. It will be called YetAnotherHandicapper and will be released for the upcoming 2021-2022 NBA season

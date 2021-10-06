@@ -1,6 +1,4 @@
 import "./App.css";
-import react from "react";
-import Prediction from "./components/prediction/Prediction";
 import DailySchedule from "./components/prediction/DailySchedule";
 import NavHeader from "./components/NavHeader";
 import { BrowserRouter, Switch, Route } from "react-router-dom";

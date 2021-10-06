@@ -15,6 +15,7 @@
         "web-vitals": "^1.1.2"
     },
     "scripts": {
+        "build:style": "tailwind build src/styles/index.css -o src/styles/tailwind.css",
         "start": "craco start",
         "build": "craco build",
         "test": "craco test",
@@ -40,7 +41,7 @@
     },
     "devDependencies": {
         "autoprefixer": "^9.8.6",
-        "postcss": "^7.0.36",
+        "postcss": "^7.0.39",
         "tailwindcss": "npm:@tailwindcss/postcss7-compat@^2.2.14"
     }
 }

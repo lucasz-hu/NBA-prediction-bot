@@ -13,6 +13,7 @@ app = Flask(__name__)
 CORS(app)
 
 test_time = config.test_time
+test_time_datetime = config.test_time_datetime
 
 #https://docs.google.com/document/d/1mN4zhW5-i2GAzL56dSfrTR8bSRFEDIXfZZdyJpeQ0lc/edit
 #https://www.nbastuffer.com/analytics101/four-factors/
@@ -164,8 +165,8 @@ def calculate_score(homeInitials, awayInitials, time=dt.now() ,year=config.seaso
 
     awayfoul = calculate_foul(awayOffenseFreeThrowsMade, awayOffenseFieldGoalAttempts, awayDefenseFreeThrowsMade, awayDefenseFieldGoalAttempts) * 100
 
-    homeMomentumStats = team_momentum_stats(homeInitials, time=test_time)
-    awayMomentumStats = team_momentum_stats(awayInitials, time=test_time)
+    homeMomentumStats = team_momentum_stats(homeInitials, time=test_time_datetime)
+    awayMomentumStats = team_momentum_stats(awayInitials, time=test_time_datetime)
 
     homeMomentumEfgp = calculate_efgp(
         homeMomentumStats["teamOffenseFieldGoal"], 

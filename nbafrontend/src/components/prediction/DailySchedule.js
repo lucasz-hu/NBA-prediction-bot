@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import DailyScheduleMatchup from "./DailyScheduleMatchup";
+import data from "../../scores/cacheGames.json";
 
 const DailySchedule = () => {
     const [dailyGames, setDailyGames] = useState([]);
@@ -21,17 +22,12 @@ const DailySchedule = () => {
     ];
 
     useEffect(() => {
-        fetch(`http://127.0.0.1:5000/getDailyGames`)
-            .then((response) => {
-                if (response.ok) {
-                    return response.json();
-                }
-                throw response;
-            })
-            .then((data) => {
-                setDailyGames(data["games"]);
-                setDailyTime(new Date(data["meta"].time * 1000));
-            });
+        try {
+            setDailyGames(data["games"]);
+            setDailyTime(new Date(data["meta"].time * 1000));
+        } catch {
+            console.log("Error with importing json");
+        }
     }, []);
 
     return (

@@ -8,12 +8,13 @@ import teamAbbreviations
 from main import calculate_score
 
 test_time = config.test_time
+test_time_datetime = config.test_time_datetime
 
 
 def getDailyGameSchedule(time):
     #print(get_schedule(2021))
     schedule = get_schedule(2021)
-    dailyGames = schedule.loc[schedule['DATE'] == test_time.strftime("%Y-%m-%d")]
+    dailyGames = schedule.loc[schedule['DATE'] == test_time_datetime.strftime("%Y-%m-%d")]
     gamesToReturn = [] 
     for index,row in dailyGames.iterrows():
         game = {}
@@ -35,7 +36,7 @@ def writeToCache():
         jsonDataId = jsonDataId + 1
         tempJsonObj["homeTeam"] = game["homeTeam"]
         tempJsonObj["awayTeam"] = game["awayTeam"]
-        result = calculate_score(game["homeTeam"], game["awayTeam"], test_time, 2021)
+        result = calculate_score(game["homeTeam"], game["awayTeam"], test_time_datetime, 2021)
         tempJsonObj["score"] = result
         tempJsonObj["id"] = jsonDataId
         scoredSchedule["games"].append(tempJsonObj)
@@ -43,9 +44,9 @@ def writeToCache():
     print("2", scoredSchedule)
 
         
-    scoredSchedule["meta"]["time"] = time.time()
+    scoredSchedule["meta"]["time"] = str(test_time)
 
-    with open("scores/cacheGames.json", "w") as outfile:
+    with open("nbafrontend/src/scores/cacheGames.json", "w") as outfile:
         json.dump(scoredSchedule, outfile)
     print("Finished at ", datetime.now().strftime('%H:%M:%S %Y-%m-%d'))
 
@@ -55,7 +56,7 @@ def main():
     # while True:
     #     schedule.run_pending()
     #     time.sleep(1)
-    print(test_time)
+    print(test_time_datetime)
     writeToCache()
 
 

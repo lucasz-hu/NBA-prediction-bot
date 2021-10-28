@@ -257,6 +257,8 @@ def get_last_x_games(team, amountOfPreviousGames, time=dt.now()):
 
 def get_last_x_stats(previousGameData, team):
     #Gets stats based on get_last_x_games schedule. Returns a dict
+    print(team)
+    print(previousGameData)
     teamStats = {
         "teamOffenseFieldGoal" : 0,
         "teamOffenseThreePoint" : 0,

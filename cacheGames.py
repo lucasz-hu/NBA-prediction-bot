@@ -13,7 +13,7 @@ test_time_datetime = config.test_time_datetime
 
 def getDailyGameSchedule(time):
     #print(get_schedule(2021))
-    schedule = get_schedule(2021)
+    schedule = get_schedule(config.season)
     dailyGames = schedule.loc[schedule['DATE'] == test_time_datetime.strftime("%Y-%m-%d")]
     gamesToReturn = [] 
     for index,row in dailyGames.iterrows():
@@ -41,7 +41,7 @@ def writeToCache():
         tempJsonObj["id"] = jsonDataId
         scoredSchedule["games"].append(tempJsonObj)
         print(tempJsonObj)
-    print("2", scoredSchedule)
+    print(scoredSchedule)
 
         
     scoredSchedule["meta"]["time"] = str(test_time)

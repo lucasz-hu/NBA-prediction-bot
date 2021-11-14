@@ -32,6 +32,7 @@ def writeToCache():
 
     dailyGameSchedule = getDailyGameSchedule("now")
     for game in dailyGameSchedule:
+        print("Game", game)
         tempJsonObj = {}
         jsonDataId = jsonDataId + 1
         tempJsonObj["homeTeam"] = game["homeTeam"]

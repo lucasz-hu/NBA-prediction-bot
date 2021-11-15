@@ -232,7 +232,7 @@ def calculate_score(homeInitials, awayInitials, time=dt.now() ,year=config.seaso
     homeMomentumTotal = (0.4*homeMomentumEfgp) + (0.25 * homeMomentumTov) + (0.2 * homeMomentumRebound) + (0.15 * homeMomentumFoul)
     awayMomentumTotal = (0.4*awayMomentumEfgp) + (0.25 * awayMomentumTov) + (0.2 * awayMomentumRebound) + (0.15 * awayMomentumFoul)
 
-    total = (((hometotal+homeMomentumTotal))-((awaytotal+awayMomentumTotal)))*2
+    total = (((hometotal+homeMomentumTotal)/2)-((awaytotal+awayMomentumTotal)/2))
     return total
 
 def team_momentum_stats(team, amountOfPreviousGames=5, time=dt.now()):

@@ -3,6 +3,9 @@ import ReactDOM from "react-dom";
 import "./index.css";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
+import mixpanel from "mixpanel-browser";
+
+mixpanel.init("d0b6c427b2f14bdb78de6f3c79c8f126", { debug: true });
 
 ReactDOM.render(
     <React.StrictMode>

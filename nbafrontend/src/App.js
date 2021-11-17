@@ -3,8 +3,10 @@ import DailySchedule from "./components/prediction/DailySchedule";
 import NavHeader from "./components/NavHeader";
 import { BrowserRouter, Switch, Route } from "react-router-dom";
 import About from "./components/About";
+import mixpanel from "mixpanel-browser";
 
 const App = () => {
+    mixpanel.track("Mainpage viewed");
     return (
         <>
             <BrowserRouter>

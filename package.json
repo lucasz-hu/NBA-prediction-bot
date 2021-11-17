@@ -19,5 +19,8 @@
     "bugs": {
         "url": "https://github.com/lucasz-hu/NBA-prediction-bot/issues"
     },
-    "homepage": "https://github.com/lucasz-hu/NBA-prediction-bot#readme"
+    "homepage": "https://github.com/lucasz-hu/NBA-prediction-bot#readme",
+    "dependencies": {
+        "mixpanel-browser": "^2.42.0"
+    }
 }

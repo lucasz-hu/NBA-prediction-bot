@@ -54,23 +54,23 @@ def calculate_score(homeInitials, awayInitials, time=dt.now() ,year=config.seaso
     homeOffenseStats = get_team_stats(
         homeInitials,
         year,
-        'TOTAL'
+        'PER_GAME'
     ) 
     homeOppStats = get_opp_stats(
         homeInitials,
         year,
-        'TOTAL'
+        'PER_GAME'
     )
 
     awayOffenseStats = get_team_stats(
         awayInitials,
         year,
-        'TOTAL'
+        'PER_GAME'
     )
     awayOppStats = get_opp_stats(
         awayInitials,
         year,
-        'TOTAL'
+        'PER_GAME'
     )
 
     homeOffenseFieldGoal = homeOffenseStats["FG"]
@@ -167,6 +167,25 @@ def calculate_score(homeInitials, awayInitials, time=dt.now() ,year=config.seaso
 
     homeMomentumStats = team_momentum_stats(homeInitials, time=test_time_datetime)
     awayMomentumStats = team_momentum_stats(awayInitials, time=test_time_datetime)
+    print("homeOffenseFieldGoal", homeOffenseFieldGoal)
+    print("homeOffenseThreePoint", homeOffenseThreePoint)
+    print("homeOffenseFieldGoalAttempts", homeOffenseFieldGoalAttempts )
+    print("homeOffenseTurnOvers", homeOffenseTurnOvers )
+    print("homeOffenseFreeThrowAttempts", homeOffenseFreeThrowAttempts )
+    print("homeOffenseOffensiveRebounds", homeOffenseOffensiveRebounds )
+    print("homeOffenseDefensiveRebounds", homeOffenseDefensiveRebounds )
+    print("homeOffenseFreeThrowsMade", homeOffenseFreeThrowsMade)
+    print("homeDefenseFieldGoal", homeDefenseFieldGoal)
+    print("homeDefenseThreePoint", homeDefenseThreePoint)
+    print("homeDefenseFieldGoalAttempts", homeDefenseFieldGoalAttempts )
+    print("homeDefenseTurnOvers", homeDefenseTurnOvers )
+    print("homeDefenseFreeThrowAttempts", homeDefenseFreeThrowAttempts )
+    print("homeDefenseOffensiveRebounds", homeDefenseOffensiveRebounds )
+    print("homeDefenseDefensiveRebounds", homeDefenseDefensiveRebounds )
+    print("homeDefenseDefensiveRebounds", homeDefenseDefensiveRebounds )
+    print("homeDefenseFreeThrowsMade", homeDefenseFreeThrowsMade)
+    print("Homehomentumstats", homeMomentumStats)
+    print("awayMomentumStats", awayMomentumStats)
 
     homeMomentumEfgp = calculate_efgp(
         homeMomentumStats["teamOffenseFieldGoal"], 
@@ -238,7 +257,8 @@ def calculate_score(homeInitials, awayInitials, time=dt.now() ,year=config.seaso
 def team_momentum_stats(team, amountOfPreviousGames=5, time=dt.now()):
     #team in full name
     stats = get_last(team, amountOfPreviousGames, time)
-    return stats
+    newStats = {key: stats[key] // amountOfPreviousGames for key in stats.keys()}
+    return newStats
 
 def get_last(team, amountOfPreviousGames, time=dt.now()):
     data = get_last_x_games(team, amountOfPreviousGames, time)
@@ -257,8 +277,6 @@ def get_last_x_games(team, amountOfPreviousGames, time=dt.now()):
 
 def get_last_x_stats(previousGameData, team):
     #Gets stats based on get_last_x_games schedule. Returns a dict
-    print(team)
-    print(previousGameData)
     teamStats = {
         "teamOffenseFieldGoal" : 0,
         "teamOffenseThreePoint" : 0,
@@ -284,7 +302,6 @@ def get_last_x_stats(previousGameData, team):
         if homeFullName == "Philadelphia 76Ers":
             homeFullName = "Philadelphia 76ers"
         game = get_box_scores(row["DATE"], homeAbbreviation, awayAbbreviation)
-        print(row["DATE"])
         if row["HOME"] == homeFullName:
             teamStats["teamOffenseFieldGoal"] += int(game[homeAbbreviation].loc[game[homeAbbreviation]["PLAYER"] == "Team Totals"]["FG"])
             teamStats["teamOffenseThreePoint"] += int(game[homeAbbreviation].loc[game[homeAbbreviation]["PLAYER"] == "Team Totals"]["3P"])

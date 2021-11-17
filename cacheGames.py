@@ -1,11 +1,17 @@
-import schedule
-import time
 import json
 from datetime import datetime
 from basketball_reference_scraper.seasons import get_schedule, get_standings
 import config
 import teamAbbreviations
 from main import calculate_score
+import logging
+
+now = datetime.now()
+
+timestamp = datetime.timestamp(now)
+logging.basicConfig(format='%(asctime)s - %(message)s', datefmt='%d-%b-%y %H:%M:%S', filename=f'logs/{timestamp}.log')
+logging.info("Testing")
+logger = logging.getLogger("nba")
 
 test_time = config.test_time
 test_time_datetime = config.test_time_datetime
@@ -25,6 +31,7 @@ def getDailyGameSchedule(time):
 
 def writeToCache():
     print("Starting writeToCache() at ", datetime.now().strftime('%H:%M:%S %Y-%m-%d'))
+    logger.info("Starting writeToCache() at ", datetime.now().strftime('%H:%M:%S %Y-%m-%d'))
     scoredSchedule = {}
     scoredSchedule["games"] = []
     scoredSchedule["meta"] = {}
@@ -40,7 +47,9 @@ def writeToCache():
         tempJsonObj["score"] = result
         tempJsonObj["id"] = jsonDataId
         scoredSchedule["games"].append(tempJsonObj)
+        logger.info(f'tempJsonObj - {tempJsonObj}')
         print(tempJsonObj)
+    logger.info(f'scoredSchedule - {scoredSchedule}')
     print(scoredSchedule)
 
         
@@ -48,7 +57,9 @@ def writeToCache():
 
     with open("nbafrontend/src/scores/cacheGames.json", "w") as outfile:
         json.dump(scoredSchedule, outfile)
-    print("Finished at ", datetime.now().strftime('%H:%M:%S %Y-%m-%d'))
+    finished = "Finished at ", datetime.now().strftime('%H:%M:%S %Y-%m-%d')
+    logger.info(f'finished - {finished}')
+    print(finished)
 
 
 def main():

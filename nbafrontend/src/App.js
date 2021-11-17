@@ -5,6 +5,7 @@ import { BrowserRouter, Switch, Route } from "react-router-dom";
 import About from "./components/About";
 
 const App = () => {
+    mixpanel.track("Mainpage viewed");
     return (
         <>
             <BrowserRouter>

@@ -39,11 +39,12 @@ def writeToCache():
 
     dailyGameSchedule = getDailyGameSchedule("now")
     for game in dailyGameSchedule:
+        print("Game", game)
         tempJsonObj = {}
         jsonDataId = jsonDataId + 1
         tempJsonObj["homeTeam"] = game["homeTeam"]
         tempJsonObj["awayTeam"] = game["awayTeam"]
-        result = calculate_score(game["homeTeam"], game["awayTeam"], test_time_datetime, 2021)
+        result = calculate_score(game["homeTeam"], game["awayTeam"], test_time_datetime, config.season)
         tempJsonObj["score"] = result
         tempJsonObj["id"] = jsonDataId
         scoredSchedule["games"].append(tempJsonObj)

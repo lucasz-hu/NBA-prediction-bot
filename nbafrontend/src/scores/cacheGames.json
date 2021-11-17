@@ -1,1 +1,23 @@
-{"games": [{"homeTeam": "BRK", "awayTeam": "GSW", "score": 9.320224022646258, "id": 1}, {"homeTeam": "UTA", "awayTeam": "PHI", "score": 2.7977079107216625, "id": 2}, {"homeTeam": "LAC", "awayTeam": "SAS", "score": 14.262394726331507, "id": 3}], "meta": {"time": "1637121420"}}
+{
+    "games": [
+        {
+            "homeTeam": "BRK",
+            "awayTeam": "GSW",
+            "score": 9.320224022646258,
+            "id": 1
+        },
+        {
+            "homeTeam": "UTA",
+            "awayTeam": "PHI",
+            "score": 2.7977079107216625,
+            "id": 2
+        },
+        {
+            "homeTeam": "LAC",
+            "awayTeam": "SAS",
+            "score": 14.262394726331507,
+            "id": 3
+        }
+    ],
+    "meta": { "time": "1637121420" }
+}
